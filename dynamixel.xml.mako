@@ -57,13 +57,13 @@ sizes = {
 <%def name="generic_servo_start(name,next_body_name,joint_name,
                                 x_dim,y_dim,z_dim,face_to_axis,bracket_clearance,
                                 lower_joint_limit, upper_joint_limit,
-                                orientation)">
+                                mount)">
 <%
     axis_size = x_dim + 0.006
     bracket_width = 0.002
     axis_to_next_body = bracket_clearance + bracket_width
 %>
-% if orientation == "standard":
+% if mount == "standard":
 <geom name="${name}" type="box" size="${x_dim/2.0} ${y_dim/2.0} ${z_dim/2.0}" pos="0 ${y_dim/2.0} 0" rgba="1 .25 .25 1"/>
 <geom name="${name}_axis" type="cylinder" size=".005 ${axis_size/2.0}" pos="0 ${y_dim-face_to_axis} 0" euler="0 90 0" contype="0" conaffinity="0"/>
 <body name="${next_body_name}" pos="0 ${y_dim-face_to_axis} 0" euler="0 0 0" >
@@ -73,7 +73,7 @@ sizes = {
       <geom name="${name}_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 -.001 0" rgba=".25 .25 .25 1"/>
       <geom name="${name}_bracket_2" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${-(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
       <geom name="${name}_bracket_3" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${-(axis_size/2.0-bracket_width/2.0)} ${-(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
-% elif orientation == "flipped":
+% elif mount == "flipped":
 <frame euler="0 0 180">
   <geom name="${name}_prev_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 -.001 0" rgba=".25 .25 .25 1"/>
   <geom name="${name}_prev_bracket_2" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${-(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
@@ -85,7 +85,7 @@ sizes = {
   <geom name="${name}" type="box" size="${x_dim/2.0} ${y_dim/2.0} ${z_dim/2.0}" pos="0 ${y_dim/2.0-face_to_axis} 0" rgba="1 .25 .25 1"/>
   <frame pos="0 ${y_dim-face_to_axis} 0">
 % else:
-<!-- Unsupported orientation ${orientation} requested-->  
+<!-- Unsupported mount ${mount} requested-->  
 % endif
 </%def>
 
@@ -96,11 +96,11 @@ sizes = {
 
 <%def name="xc330_start(name,next_body_name,joint_name,
                         lower_joint_limit='-90', upper_joint_limit='90',
-                        orientation='standard')">
+                        mount='standard')">
 ${generic_servo_start(name, next_body_name, joint_name, 
                       xc330_x_dim, xc330_y_dim, xc330_z_dim, xc330_face_to_axis, xc330_bracket_clearance,
                       lower_joint_limit, upper_joint_limit,
-                      orientation)}
+                      mount)}
 </%def>
 
 <%def name="xc330_end()">
@@ -110,11 +110,11 @@ ${generic_servo_end()}
 
 <%def name="xm430_start(name,next_body_name,joint_name,
                         lower_joint_limit='-90', upper_joint_limit='90',
-                        orientation='standard')">
+                        mount='standard')">
 ${generic_servo_start(name, next_body_name, joint_name, 
                       xm430_x_dim, xm430_y_dim, xm430_z_dim, xm430_face_to_axis, xm430_bracket_clearance,
                       lower_joint_limit, upper_joint_limit,
-                      orientation)}
+                      mount)}
 </%def>
 
 <%def name="xm430_end()">
@@ -123,11 +123,11 @@ ${generic_servo_end()}
 
 <%def name="xm540_start(name,next_body_name,joint_name,
                         lower_joint_limit='-90', upper_joint_limit='90',
-                        orientation='standard')">
+                        mount='standard')">
 ${generic_servo_start(name, next_body_name, joint_name, 
                       xm540_x_dim, xm540_y_dim, xm540_z_dim, xm540_face_to_axis, xm540_bracket_clearance,
                       lower_joint_limit, upper_joint_limit,
-                      orientation)}
+                      mount)}
 </%def>
 
 <%def name="xm540_end()">
