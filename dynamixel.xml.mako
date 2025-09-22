@@ -6,25 +6,25 @@
     xc330_y_dim = 0.034
     xc330_z_dim = 0.020
     xc330_face_to_axis = 0.0095
-    xc330_bracket_clearance = 0.014
+    xc330_bracket_clearance = 0.017
 
     xm430_x_dim = 0.0340
     xm430_y_dim = 0.0465
     xm430_z_dim = 0.0285
     xm430_face_to_axis = 0.01125
-    xm430_bracket_clearance = 0.020
+    xm430_bracket_clearance = 0.028
 
     xm540_x_dim = 0.0440
     xm540_y_dim = 0.0585
     xm540_z_dim = 0.0335
     xm540_face_to_axis = 0.01375
-    xm540_bracket_clearance = 0.022
+    xm540_bracket_clearance = 0.032
 
     dualxc430_x_dim = 0.0360
     dualxc430_y_dim = 0.0465
     dualxc430_z_dim = 0.0360
     dualxc430_face_to_axis = 0.01125
-    dualxc430_bracket_clearance = 0.022
+    dualxc430_bracket_clearance = 0.028
 
 sizes = {
     "xc330_x_dim": xc330_x_dim,
@@ -76,10 +76,14 @@ ${box_mesh("xc330", xc330_x_dim, xc330_y_dim,xc330_z_dim)}
 ${box_mesh("xm430", xm430_x_dim, xm430_y_dim,xm430_z_dim)}
 ${box_mesh("xm540", xm540_x_dim, xm540_y_dim,xm540_z_dim)}
 ${box_mesh("dualxc430_half", dualxc430_x_dim, dualxc430_y_dim /2.0, dualxc430_z_dim)}
-${box_mesh("xc330_bracket", xc330_x_dim+0.01, 0.002, xc330_z_dim)}
-${box_mesh("xm430_bracket", xm430_x_dim+0.01, 0.002, xm430_z_dim)}
-${box_mesh("xm540_bracket", xm540_x_dim+0.01, 0.002, xm540_z_dim)}
-${box_mesh("dualxc430_half_bracket", dualxc430_x_dim+0.01, 0.002, dualxc430_z_dim)}
+${box_mesh("xc330_bracket", xc330_x_dim+0.006, 0.002, xc330_z_dim)}
+${box_mesh("xc330_bracket_side", 0.002, xc330_bracket_clearance, xc330_z_dim)}
+${box_mesh("xm430_bracket", xm430_x_dim+0.006, 0.002, xm430_z_dim)}
+${box_mesh("xm430_bracket_side", 0.002, xm430_bracket_clearance, xm430_z_dim)}
+${box_mesh("xm540_bracket", xm540_x_dim+0.006, 0.002, xm540_z_dim)}
+${box_mesh("xm540_bracket_side", 0.002, xm540_bracket_clearance, xm540_z_dim)}
+${box_mesh("dualxc430_half_bracket", dualxc430_x_dim+0.006, 0.002, dualxc430_z_dim)}
+${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, dualxc430_z_dim)}
 </%def>
 
 <%def name="get_size(name)">
@@ -94,7 +98,7 @@ ${box_mesh("dualxc430_half_bracket", dualxc430_x_dim+0.01, 0.002, dualxc430_z_di
 <%
     axis_size = x_dim + 0.006
     bracket_width = 0.002
-    axis_to_next_body = bracket_clearance + bracket_width
+    axis_to_next_body = bracket_clearance
 %>
 % if mount == "standard":
 <body name="${name}_body" pos="${pos}" euler="${euler}">
@@ -108,21 +112,25 @@ ${box_mesh("dualxc430_half_bracket", dualxc430_x_dim+0.01, 0.002, dualxc430_z_di
   <inertial pos="0 0 0" mass="0.05" diaginertia="1e-5 1e-5 1e-5"/>
   <joint type="hinge" name="${joint_name}" axis="1 0 0" limited="true" range="${lower_joint_limit} ${upper_joint_limit}"/>  
 % if use_primitives:
-  <geom name="${name}_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 ${axis_to_next_body-.001} 0" rgba=".25 .25 .25 1"/>
-  <geom name="${name}_bracket_2" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${axis_to_next_body-(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
-  <geom name="${name}_bracket_3" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${-(axis_size/2.0-bracket_width/2.0)} ${axis_to_next_body-(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 ${axis_to_next_body-bracket_width/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_bracket_2" type="box" size="${bracket_width/2.0} ${bracket_clearance/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${axis_to_next_body/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_bracket_3" type="box" size="${bracket_width/2.0} ${bracket_clearance/2.0} ${z_dim/2.0}" pos="${-(axis_size/2.0-bracket_width/2.0)} ${axis_to_next_body/2.0} 0" rgba=".25 .25 .25 1"/>
 % else:
   <geom name="${name}_bracket" type="mesh" mesh="${mesh}_bracket" pos="0 ${axis_to_next_body-.001} 0"/>
-%endif
+  <geom name="${name}_bracket_side1" type="mesh" mesh="${mesh}_bracket_side" pos="${ axis_size/2.0 - 0.001} ${axis_to_next_body/2.0} 0"/>
+  <geom name="${name}_bracket_side2" type="mesh" mesh="${mesh}_bracket_side" pos="${-axis_size/2.0 + 0.001} ${axis_to_next_body/2.0} 0"/>
+  %endif
   <body name="${next_body_name}" pos="0 ${axis_to_next_body} 0">
 % elif mount == "flipped":
 <body name="${name}_bracket" pos="${pos}" euler="${euler}">
 % if use_primitives:
-  <geom name="${name}_prev_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 .001 0" rgba=".25 .25 .25 1"/>
-  <geom name="${name}_prev_bracket_2" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
-  <geom name="${name}_prev_bracket_3" type="box" size="${bracket_width/2.0} ${(bracket_clearance+bracket_width)/2.0} ${z_dim/2.0}" pos="${-(axis_size/2.0-bracket_width/2.0)} ${(bracket_clearance+bracket_width)/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_prev_bracket_1" type="box" size="${axis_size/2.0} ${bracket_width/2.0} ${z_dim/2.0}" pos="0 ${bracket_width/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_prev_bracket_2" type="box" size="${bracket_width/2.0} ${bracket_clearance/2.0} ${z_dim/2.0}" pos="${axis_size/2.0-bracket_width/2.0} ${bracket_clearance/2.0} 0" rgba=".25 .25 .25 1"/>
+  <geom name="${name}_prev_bracket_3" type="box" size="${bracket_width/2.0} ${bracket_clearance/2.0} ${z_dim/2.0}" pos="${-(axis_size/2.0-bracket_width/2.0)} ${bracket_clearance/2.0} 0" rgba=".25 .25 .25 1"/>
 % else:
   <geom name="${name}_bracket" type="mesh" mesh="${mesh}_bracket" pos="0 .001 0"/>
+  <geom name="${name}_bracket_side1" type="mesh" mesh="${mesh}_bracket_side" pos="${ axis_size/2.0 - 0.001} ${axis_to_next_body/2.0} 0"/>
+  <geom name="${name}_bracket_side2" type="mesh" mesh="${mesh}_bracket_side" pos="${-axis_size/2.0 + 0.001} ${axis_to_next_body/2.0} 0"/>
 % endif
 <body name="${name}_body" pos="0 ${axis_to_next_body} 0" euler="0 0 0" >
   <joint type="hinge" name="${joint_name}" axis="1 0 0" limited="true" range="-90 90"/>  
