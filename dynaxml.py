@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from mako.lookup import TemplateLookup
 from mako.template import Template
+from mako import exceptions
 
 import argparse
 import os
+import sys
 
 def main():
 
@@ -31,7 +33,12 @@ def main():
   print("Saving to ", outfile)
 
   # Render the template with global parameters (if any)
-  xml_output = template.render()
+  try:
+    xml_output = template.render()
+  except:
+    print(exceptions.text_error_template().render())
+    print("mako parsing failed")
+    sys.exit(1)
 
   # Save result to a MuJoCo XML file
   with open(outfile, "w") as f:
