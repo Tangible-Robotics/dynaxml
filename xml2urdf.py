@@ -41,6 +41,21 @@ def process_urdf(urdf_file, package_name):
             col.append(copy.deepcopy(sphere_xml))
             link.append(col)
 
+    print("Ensuring all joint velocity limits are written as floats")
+    for joint in root.findall("joint"):
+        limit = joint.find("limit")
+        if limit is not None and "velocity" in limit.attrib:
+            v = limit.attrib["velocity"]
+            try:
+                # Convert to float and back, forcing ".0" if integer
+                v_float = float(v)
+                if v_float.is_integer():
+                    v_float = v_float + 0.1
+                limit.attrib["velocity"] = str(v_float)
+            except ValueError:
+                print(f"[WARN] Joint '{joint.attrib['name']}': velocity '{v}' is not a number, skipping")
+    
+
     indent(root)
     tree.write(urdf_file, encoding="utf-8", xml_declaration=True)
     print(f"URDF post-processed and saved: {urdf_file}")
