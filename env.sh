@@ -9,5 +9,6 @@ case ":$PATH:" in
     *) export PATH="$DYNAXML_PATH:$PATH" ;;
 esac
 
-# Make dynaxml.py executable
+# Make scripts executable
 chmod +x "$DYNAXML_PATH/dynaxml.py"
+chmod +x "$DYNAXML_PATH/xml2urdf.py"
