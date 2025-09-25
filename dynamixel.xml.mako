@@ -1,101 +1,20 @@
-
 <%!
     use_primitives = False
-
-    xc330_x_dim = 0.023
-    xc330_y_dim = 0.034
-    xc330_z_dim = 0.020
-    xc330_face_to_axis = 0.0095
-    xc330_bracket_clearance = 0.017
-
-    xm430_x_dim = 0.0340
-    xm430_y_dim = 0.0465
-    xm430_z_dim = 0.0285
-    xm430_face_to_axis = 0.01125
-    xm430_bracket_clearance = 0.028
-
-    xm540_x_dim = 0.0440
-    xm540_y_dim = 0.0585
-    xm540_z_dim = 0.0335
-    xm540_face_to_axis = 0.01375
-    xm540_bracket_clearance = 0.032
-
-    dualxc430_x_dim = 0.0360
-    dualxc430_y_dim = 0.0465
-    dualxc430_z_dim = 0.0360
-    dualxc430_face_to_axis = 0.01125
-    dualxc430_bracket_clearance = 0.028
-
-sizes = {
-    "xc330_x_dim": xc330_x_dim,
-    "xc330_y_dim": xc330_y_dim,
-    "xc330_z_dim": xc330_z_dim,
-    "xc330_face_to_axis": xc330_face_to_axis,
-    "xc330_bracket_clearance": xc330_bracket_clearance,
-
-    "xm430_x_dim": xm430_x_dim,
-    "xm430_y_dim": xm430_y_dim,
-    "xm430_z_dim": xm430_z_dim,
-    "xm430_face_to_axis": xm430_face_to_axis,
-    "xm430_bracket_clearance": xm430_bracket_clearance,
-
-    "xm540_x_dim": xm540_x_dim,
-    "xm540_y_dim": xm540_y_dim,
-    "xm540_z_dim": xm540_z_dim,
-    "xm540_face_to_axis": xm540_face_to_axis,
-    "xm540_bracket_clearance": xm540_bracket_clearance,
-
-    "dualxc430_x_dim": dualxc430_x_dim,
-    "dualxc430_y_dim": dualxc430_y_dim,
-    "dualxc430_z_dim": dualxc430_z_dim,
-    "dualxc430_face_to_axis": dualxc430_face_to_axis,
-    "dualxc430_bracket_clearance": dualxc430_bracket_clearance,
-}%>
-
-<%def name="box_mesh(name, x, y, z)">
-<%
-    xh = x/2.0
-    yh = y/2.0
-    zh = z/2.0
 %>
-<asset>
-  <mesh name="${name}" vertex=" ${xh}  ${yh}  ${zh}
-                               -${xh}  ${yh}  ${zh}
-                                ${xh} -${yh}  ${zh}
-                                ${xh}  ${yh} -${zh}
-                                ${xh} -${yh} -${zh}
-                               -${xh}  ${yh} -${zh}
-                               -${xh} -${yh}  ${zh}
-                               -${xh} -${yh} -${zh}
-                                "/>
-</asset>
-</%def>
 
-<%def name="get_meshes()">
-${box_mesh("xc330", xc330_x_dim, xc330_y_dim,xc330_z_dim)}
-${box_mesh("xm430", xm430_x_dim, xm430_y_dim,xm430_z_dim)}
-${box_mesh("xm540", xm540_x_dim, xm540_y_dim,xm540_z_dim)}
-${box_mesh("dualxc430_half", dualxc430_x_dim, dualxc430_y_dim /2.0, dualxc430_z_dim)}
-${box_mesh("xc330_bracket", xc330_x_dim+0.006, 0.002, xc330_z_dim)}
-${box_mesh("xc330_bracket_side", 0.002, xc330_bracket_clearance, xc330_z_dim)}
-${box_mesh("xm430_bracket", xm430_x_dim+0.006, 0.002, xm430_z_dim)}
-${box_mesh("xm430_bracket_side", 0.002, xm430_bracket_clearance, xm430_z_dim)}
-${box_mesh("xm540_bracket", xm540_x_dim+0.006, 0.002, xm540_z_dim)}
-${box_mesh("xm540_bracket_side", 0.002, xm540_bracket_clearance, xm540_z_dim)}
-${box_mesh("dualxc430_half_bracket", dualxc430_x_dim+0.006, 0.002, dualxc430_z_dim)}
-${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, dualxc430_z_dim)}
-</%def>
-
-<%def name="get_size(name)">
-<% return sizes[name]%>
-</%def>
-
-<%def name="generic_servo_start(name, pos, euler,
-                                next_body_name,joint_name,
-                                x_dim,y_dim,z_dim,face_to_axis,bracket_clearance,
-                                lower_joint_limit, upper_joint_limit,
-                                mount, mesh = '')">
+<%def name="servo_start(servo, 
+                        name, next_body_name,joint_name,
+                        pos = '0 0 0', euler = '0 0 0',
+                        mount = 'standard')">
 <%
+    x_dim = servo.x_dim
+    y_dim = servo.y_dim
+    z_dim = servo.z_dim
+    face_to_axis = servo.face_to_axis
+    bracket_clearance = servo.bracket_clearance
+    mesh = servo.type
+    lower_joint_limit = servo.lower_joint_limit
+    upper_joint_limit = servo.upper_joint_limit
     axis_size = x_dim + 0.006
     bracket_width = 0.002
     axis_to_next_body = bracket_clearance
@@ -106,7 +25,7 @@ ${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, du
 <geom name="${name}_body" type="box" size="${x_dim/2.0} ${y_dim/2.0} ${z_dim/2.0}" pos="0 ${y_dim/2.0} 0" rgba="0.5 0.5 0.75 1"/>
 <geom name="${name}_axis" type="cylinder" size=".005 ${axis_size/2.0}" pos="0 ${y_dim-face_to_axis} 0" euler="0 90 0" contype="0" conaffinity="0"/>
 % else:
-<geom name="${name}_body" type="mesh" mesh="${mesh}" pos="0 ${y_dim/2.0} 0" rgba="0.5 0.5 0.75 1"/>
+<geom name="${name}_body" type="mesh" mesh="${mesh}_body" pos="0 ${y_dim/2.0} 0" rgba="0.5 0.5 0.75 1"/>
 % endif
 <body name="${name}_bracket" pos="0 ${y_dim-face_to_axis} 0" euler="0 0 0" >
   <inertial pos="0 0 0" mass="0.05" diaginertia="1e-5 1e-5 1e-5"/>
@@ -138,7 +57,7 @@ ${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, du
   <geom name="${name}_axis1" type="cylinder" size=".005 ${axis_size/2.0}" pos="0 0 0" euler="0 90 0" contype="0" conaffinity="0"/>
   <geom name="${name}" type="box" size="${x_dim/2.0} ${y_dim/2.0} ${z_dim/2.0}" pos="0 ${y_dim/2.0-face_to_axis} 0" rgba="0.5 0.5 0.75 1"/>
 %else:
-  <geom name="${name}_body" type="mesh" mesh="${mesh}" pos="0 ${y_dim/2.0-face_to_axis} 0" rgba="0.5 0.5 0.75 1"/>
+  <geom name="${name}_body" type="mesh" mesh="${mesh}_body" pos="0 ${y_dim/2.0-face_to_axis} 0" rgba="0.5 0.5 0.75 1"/>
 %endif
   <body name="${next_body_name}" pos="0 ${y_dim-face_to_axis} 0">
 % else:
@@ -146,77 +65,34 @@ ${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, du
 % endif
 </%def>
 
-<%def name="generic_servo_end()">
+<%def name="servo_end()">
 </body>
 </body>
 </body>
 </%def>
 
-<%def name="xc330_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-120', upper_joint_limit='120',
-                        mount='standard', pos='0 0 0', euler='0 0 0'
-                        )">
-${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
-                      xc330_x_dim, xc330_y_dim, xc330_z_dim, xc330_face_to_axis, xc330_bracket_clearance,
-                      lower_joint_limit, upper_joint_limit,
-                      mount,'xc330')}
-</%def>
-
-<%def name="xc330_end()">
-${generic_servo_end()}
-</%def>
-
-
-<%def name="xm430_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-120', upper_joint_limit='120',
-                        mount='standard', pos='0 0 0', euler='0 0 0')">
-${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
-                      xm430_x_dim, xm430_y_dim, xm430_z_dim, xm430_face_to_axis, xm430_bracket_clearance,
-                      lower_joint_limit, upper_joint_limit,
-                      mount,'xm430')}
-</%def>
-
-<%def name="xm430_end()">
-${generic_servo_end()}
-</%def>
-
-<%def name="xm540_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-120', upper_joint_limit='120',
-                        mount='standard', pos='0 0 0', euler='0 0 0')">
-${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
-                      xm540_x_dim, xm540_y_dim, xm540_z_dim, xm540_face_to_axis, xm540_bracket_clearance,
-                      lower_joint_limit, upper_joint_limit,
-                      mount,'xm540')}
-</%def>
-
-<%def name="xm540_end()">
-${generic_servo_end()}
-</%def>
-
-<%def name="dualxc430_start(name,joint1_name,joint2_name,next_body_name,
-                            lower_joint1_limit='-120', upper_joint1_limit='120',
-                            lower_joint2_limit='-120', upper_joint2_limit='120',
-                            pos='0 0 0', euler='0 0 0')">
+<%def name="dual_servo_start(servo, 
+                             name,joint1_name,joint2_name,next_body_name,
+                             pos='0 0 0', euler='0 0 0')">
 <%
-    axis_size = dualxc430_x_dim + 0.006
+    axis_size = servo.x_dim + 0.006
     bracket_width = 0.002
-    axis_to_next_body = dualxc430_bracket_clearance + bracket_width
+    axis_to_next_body = servo.bracket_clearance
     first_name = name + "first"
     bridge_name = name + "bridge"
     second_name = name + "second"
 %>
-${generic_servo_start(first_name, pos, euler, bridge_name, joint1_name, 
-                      dualxc430_x_dim, dualxc430_y_dim/2.0, dualxc430_z_dim, dualxc430_face_to_axis, dualxc430_bracket_clearance,
-                      lower_joint1_limit, upper_joint1_limit,
-                      "flipped",'dualxc430_half')}
-${generic_servo_start(second_name, "0 0 0", "0 90 0",
-                      next_body_name, joint2_name, 
-                      dualxc430_x_dim, dualxc430_y_dim/2.0, dualxc430_z_dim, dualxc430_face_to_axis, dualxc430_bracket_clearance,
-                      lower_joint2_limit, upper_joint2_limit,
-                      "standard",'dualxc430_half')}
+${servo_start(servo,
+              first_name, bridge_name, joint1_name, 
+              pos, euler,                       
+              "flipped")}
+${servo_start(servo,
+              second_name, next_body_name, joint2_name, 
+              "0 0 0", "0 90 0",                      
+              "standard")}
 </%def>
 
-<%def name="dualxc430_end()">
+<%def name="dual_servo_end()">
 
 </body>
 </body>
