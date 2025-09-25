@@ -133,7 +133,7 @@ ${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, du
   <geom name="${name}_bracket_side2" type="mesh" mesh="${mesh}_bracket_side" pos="${-axis_size/2.0 + 0.001} ${axis_to_next_body/2.0} 0"/>
 % endif
 <body name="${name}_body" pos="0 ${axis_to_next_body} 0" euler="0 0 0" >
-  <joint type="hinge" name="${joint_name}" axis="1 0 0" limited="true" range="-90 90"/>  
+  <joint type="hinge" name="${joint_name}" axis="1 0 0" limited="true" range="${lower_joint_limit} ${upper_joint_limit}"/>  
 % if use_primitives:
   <geom name="${name}_axis1" type="cylinder" size=".005 ${axis_size/2.0}" pos="0 0 0" euler="0 90 0" contype="0" conaffinity="0"/>
   <geom name="${name}" type="box" size="${x_dim/2.0} ${y_dim/2.0} ${z_dim/2.0}" pos="0 ${y_dim/2.0-face_to_axis} 0" rgba="0.5 0.5 0.75 1"/>
@@ -153,7 +153,7 @@ ${box_mesh("dualxc430_half_bracket_side", 0.002, dualxc430_bracket_clearance, du
 </%def>
 
 <%def name="xc330_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-90', upper_joint_limit='90',
+                        lower_joint_limit='-120', upper_joint_limit='120',
                         mount='standard', pos='0 0 0', euler='0 0 0'
                         )">
 ${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
@@ -168,7 +168,7 @@ ${generic_servo_end()}
 
 
 <%def name="xm430_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-90', upper_joint_limit='90',
+                        lower_joint_limit='-120', upper_joint_limit='120',
                         mount='standard', pos='0 0 0', euler='0 0 0')">
 ${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
                       xm430_x_dim, xm430_y_dim, xm430_z_dim, xm430_face_to_axis, xm430_bracket_clearance,
@@ -181,7 +181,7 @@ ${generic_servo_end()}
 </%def>
 
 <%def name="xm540_start(name,next_body_name,joint_name,
-                        lower_joint_limit='-90', upper_joint_limit='90',
+                        lower_joint_limit='-120', upper_joint_limit='120',
                         mount='standard', pos='0 0 0', euler='0 0 0')">
 ${generic_servo_start(name, pos, euler, next_body_name, joint_name, 
                       xm540_x_dim, xm540_y_dim, xm540_z_dim, xm540_face_to_axis, xm540_bracket_clearance,
@@ -194,8 +194,8 @@ ${generic_servo_end()}
 </%def>
 
 <%def name="dualxc430_start(name,joint1_name,joint2_name,next_body_name,
-                            lower_joint1_limit='-90', upper_joint1_limit='90',
-                            lower_joint2_limit='-90', upper_joint2_limit='90',
+                            lower_joint1_limit='-120', upper_joint1_limit='120',
+                            lower_joint2_limit='-120', upper_joint2_limit='120',
                             pos='0 0 0', euler='0 0 0')">
 <%
     axis_size = dualxc430_x_dim + 0.006
